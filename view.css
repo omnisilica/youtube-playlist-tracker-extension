@@ -1,0 +1,56 @@
+/* Global styles
+------------------------------------*/
+html {
+  box-sizing: border-box;
+}
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+body {
+  color: #343434;
+  background-color: rgba(1, 6, 8, 1);
+  padding: 0;
+  font-family: "Montserrat", sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.view-root {
+  min-width: 300px;
+  margin: auto;
+}
+
+/* Styles for all pages that aren't
+   YouTube pages
+------------------------------------*/
+.not-yt-page {
+  margin: auto;
+  text-align: center;
+}
+
+.not-yt-page p {
+  min-width: 80%;
+  color: rgba(241, 241, 241, 1);
+}
+
+.not-yt-page a {
+  font-size: 12px;
+  text-decoration: none;
+  color: rgba(33, 135, 184, 1);
+}
+
+.not-yt-page a:hover {
+  color: rgba(137, 207, 240, 1);
+}
+
+/* Styles for YouTube pages with
+   no playlists on them.
+------------------------------------*/
+.no-active-playlist-container {
+  margin: auto;
+  text-align: center;
+  color: rgba(241, 241, 241, 1);
+}
