@@ -24,13 +24,6 @@ const getApiKey = () => {
 };
 
 const requestPlaylistDetails = async () => {
-  // console.log(
-  //   "API Key: ",
-  //   getApiKey().then((result) => {
-  //     console.log(result);
-  //   })
-  // );
-
   return new Promise(
     getApiKey().then((result) => {
       let config = JSON.parse(result)[0];
@@ -42,30 +35,7 @@ const requestPlaylistDetails = async () => {
       console.log(videoSnippetRequest);
     })
   );
-
-  // const videoSnippetRequest = await fetch(
-  //   `https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${ytListParameter}&key=${api_key}`
-  // );
-
-  //console.log(videoSnippetRequest);
-
-  // return videoSnippetRequest;
 };
-
-// const getCurrentPlaylistThumbnail = () => {
-//   //console.log(requestPlaylistDetails());
-//   //return requestPlaylistDetails().items[0].snippet.thumbnails.default.url;
-
-//   return requestPlaylistDetails().then((result) => {
-//     console.log("see");
-//     console.log(result.json());
-//     return result.items[0].snippet.thumbnails.default.url;
-//   });
-// };
-
-// const getCurrentPlaylistTitle = () => {
-//   return requestPlaylistDetails().items[0].snippet.title;
-// };
 
 const renderNotOnYouTubePageUI = () => {
   // Create elements
@@ -109,6 +79,7 @@ const renderNoPlaylistFoundUI = () => {
   not_a_yt_page_with_active_playlist_div.appendChild(
     not_a_yt_page_with_active_playlist_paragraph
   );
+
   viewRoot.replaceChildren(not_a_yt_page_with_active_playlist_div);
 };
 
@@ -118,7 +89,7 @@ const getCurrentPlaylistDetails = async (api_key) => {
   );
 
   const response = await playlistSnippetRequest.json();
-  // console.log(response);
+
   return response;
 };
 
@@ -134,7 +105,6 @@ const renderPlaylistFoundUI = (playlistTitle, thumbnailURL, trackingStatus) => {
 
   // Add attributes
   playlistDetails_section_img.src = thumbnailURL;
-  //  playlistDetails_section_img.src = tempImg;
   playlistDetails_section_img.alt = `Thumbnail image for ${playlistTitle}`;
   playlistDetails_section_img.title = `Thumbnail image for ${playlistTitle}`;
 
@@ -146,7 +116,6 @@ const renderPlaylistFoundUI = (playlistTitle, thumbnailURL, trackingStatus) => {
 
   // Add text
   playlistDetails_sectionTitle_paragraph.innerHTML = playlistTitle;
-  //playlistDetails_sectionTitle_paragraph.innerHTML = tempTitle;
   playlistDetails_sectionRecordParagraph.innerHTML = "Record";
 
   // Build Node structure (nest elements)
@@ -172,20 +141,11 @@ const renderPlaylistFoundUI = (playlistTitle, thumbnailURL, trackingStatus) => {
 const setPlaylistFoundUI = () => {
   getApiKey().then(async (result) => {
     let config = JSON.parse(result)[0];
-    //const activeTab = await getActiveTabURL();
 
     let playlistDetailsPromise = await getCurrentPlaylistDetails(
       config.YT_API_KEY
     );
     let playlistDetails = playlistDetailsPromise.items[0].snippet;
-
-    // chrome.tabs.sendMessage(
-    //   activeTab.id,
-    //   {
-    //     message: "check_playlist_recording_status",
-    //   },
-    //   renderPlaylistFoundUI
-    // );
 
     let myPort = chrome.runtime.connect({
       name: "port-from-background-service",
@@ -198,7 +158,6 @@ const setPlaylistFoundUI = () => {
 
     myPort.onMessage.addListener((message) => {
       console.log("In view, received message from background script: ");
-      //console.log(message.greeting);
       if (
         message.purpose === "playlist-tracking-status" &&
         !message.trackingSatus
@@ -223,7 +182,7 @@ const setPlaylistFoundUI = () => {
   if (currentTab.url.includes("youtube.com/watch") && ytListParameter) {
     console.log("User is on a page with an active playlist.");
 
-    //display current playlist
+    // Set and display current playlist
     setPlaylistFoundUI();
   } else if (currentTab.url.includes("youtube.com")) {
     console.log(
