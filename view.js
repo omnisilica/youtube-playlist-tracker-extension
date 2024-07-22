@@ -12,7 +12,6 @@ const xhttp = new XMLHttpRequest();
 
 const getApiKey = () => {
   return new Promise((resolve) => {
-    //let API_KEY;
     xhttp.open("GET", "config.json");
 
     xhttp.onload = () => {
@@ -21,20 +20,6 @@ const getApiKey = () => {
 
     xhttp.send();
   });
-};
-
-const requestPlaylistDetails = async () => {
-  return new Promise(
-    getApiKey().then((result) => {
-      let config = JSON.parse(result)[0];
-      console.log("The key: ", config.YT_API_KEY);
-
-      const videoSnippetRequest = fetch(
-        `https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${ytListParameter}&key=${config.YT_API_KEY}`
-      );
-      console.log(videoSnippetRequest);
-    })
-  );
 };
 
 const renderNotOnYouTubePageUI = () => {
