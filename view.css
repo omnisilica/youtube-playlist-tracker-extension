@@ -54,3 +54,81 @@ body {
   text-align: center;
   color: rgba(241, 241, 241, 1);
 }
+
+/* Styles for displaying Playlist Details */
+
+.playlist-details {
+  min-width: 90%;
+  text-align: center;
+  border: 1px solid rgba(45, 45, 45, 1);
+  border-radius: 10px;
+  background-color: rgba(38, 38, 38, 1);
+}
+
+.playlist-details img {
+  float: left;
+  width: 40%;
+  border-radius: 8px 0px 0px 0px;
+}
+
+.playlist-title {
+  float: right;
+  overflow-wrap: break-word;
+  width: 60%;
+  text-align: left;
+}
+
+.playlist-title p {
+  margin-left: 10px;
+  margin-top: 20%;
+  font-size: 90%;
+  font-weight: bold;
+  color: rgba(241, 241, 241, 1);
+}
+
+/* Styles for record button */
+
+.record-playlist {
+  clear: both;
+  border: 0.5px solid rgba(38, 38, 38, 1);
+  border-radius: 0px 0px 8px 8px;
+  /*background-color: rgba(15,15,15, 1);*/
+  /* color: rgba(241, 241, 241, 1); */
+  /*color: rgba(33, 135, 184, 1);*/
+}
+
+.record-button {
+  width: 100%;
+  border-radius: 0px 0px 8px 8px;
+  border-width: 0px;
+  background-color: rgba(15, 15, 15, 1);
+  color: rgba(55, 175, 212, 1);
+}
+
+.record-button:hover {
+  background-color: rgba(115, 194, 251, 1);
+  color: rgba(248, 248, 255, 1);
+  /*transition-delay: 0.1s;*/
+}
+
+.record-playlist p:hover {
+  cursor: pointer;
+}
+
+.view-all-button,
+.stop-recording-button {
+  display: inline-block;
+  background-color: rgba(15, 15, 15, 1);
+  border: 0px;
+  padding: 12px;
+  width: 50%;
+}
+
+.stop-recording-button {
+  color: rgba(255, 15, 15, 1);
+}
+
+.stop-recording-button:hover {
+  background-color: rgba(255, 15, 15, 1);
+  color: rgba(248, 248, 255, 1);
+}
