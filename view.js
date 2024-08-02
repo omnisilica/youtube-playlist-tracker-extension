@@ -1,16 +1,11 @@
 import { getActiveTabURL } from "./utils.js";
 
 const viewRoot = document.querySelector(".view-root");
-// const currentTab = await getActiveTabURL();
-// const currentTabParameters = currentTab.url.split("?")[1];
-// const ytURLParameters = new URLSearchParams(currentTabParameters);
-// const ytListParameter = ytURLParameters.get("list");
-//const activeTab = await getActiveTabURL();
-// const activeTabID = currentTab.id;
+const xhttp = new XMLHttpRequest();
+
 const chromeTabsCommunicationPort = chrome.runtime.connect({
   name: "port-from-background-service",
 });
-const xhttp = new XMLHttpRequest();
 
 const getApiKey = () => {
   return new Promise((resolve) => {
@@ -37,9 +32,6 @@ const getYTUrlParameters = async () => {
 };
 
 const getYTListParameter = async () => {
-  // const currentTab = await getCurrentTab();
-  // const currentTabParameters = currentTab.url.split("?")[1];
-  // const ytURLParameters = new URLSearchParams(currentTabParameters);
   const ytURLParameters = await getYTUrlParameters();
   const ytListParameter = ytURLParameters.get("list");
 
@@ -47,9 +39,6 @@ const getYTListParameter = async () => {
 };
 
 const getYTVideoParameter = async () => {
-  // const currentTab = await getCurrentTab();
-  // const currentTabParameters = currentTab.url.split("?")[1];
-  // const ytURLParameters = new URLSearchParams(currentTabParameters);
   const ytURLParameters = await getYTUrlParameters();
   const ytVideoParameter = ytURLParameters.get("v");
   console.log(ytVideoParameter);
@@ -61,18 +50,6 @@ const renderNotTargetPalylistUI = async (tracking) => {
   // Create elements
   const not_target_playlist_div = document.createElement("div");
   const not_target_playlist_div_paragraph = document.createElement("p");
-  // const go_to_target_playlist_anchor = document.createElement("a");
-
-  // Build YouTube target playlist link
-  // const firstVideo = await getYTVideoParameter();
-  // const targetPlaylist = await getYTListParameter();
-
-  // const target_playlist_href = "https://www.youtube.com/" + "?v=" + firstVideo + "&list=" + targetPlaylist;
-
-  // Add attributes
-  // go_to_target_playlist_anchor.href = target_playlist_href;
-  // go_to_target_playlist_anchor.title =
-  ("Click to navigate to the YouTube playlist you're tracking.");
 
   // Add classes
   not_target_playlist_div.className = "not-target-playlist-container";
@@ -80,28 +57,6 @@ const renderNotTargetPalylistUI = async (tracking) => {
   // Add text
   not_target_playlist_div_paragraph.innerHTML =
     "You're already tracking another playlist.";
-  // go_to_target_playlist_anchor.innerHTML = "Go to playlist";
-
-  // Add text with condition
-  /*if (video_exists) {
-    not_a_yt_page_with_active_playlist_paragraph.innerHTML =
-      "It looks like you're not on a YouTube page with an active playlist on it.";
-  } else {
-    not_a_yt_page_with_active_playlist_paragraph.innerHTML =
-      "It looks like you're not on a YouTube page with an active playlist on it. This chrome extension doesn't work with picture in picture mode.";
-  }*/
-  /*if (tracking && !video_exists) {
-    not_a_yt_page_with_active_playlist_paragraph.innerHTML =
-      "It looks like you're not on a YouTube page with an active playlist on it. This chrome extension doesn't work with picture in picture mode.";
-    // Offer to go to the target playlist
-  } else if (tracking) {
-    not_a_yt_page_with_active_playlist_paragraph.innerHTML =
-      "It looks like you're not on a YouTube page with an active playlist on it.";
-    // Offer to go to the playlist that's being tracked
-  } else {
-    not_a_yt_page_with_active_playlist_paragraph.innerHTML =
-      "It looks like you're not on a YouTube page with an active playlist on it.";
-  }*/
 
   // Build Node structure (nest elements)
   not_target_playlist_div.appendChild(not_target_playlist_div_paragraph);
@@ -111,16 +66,12 @@ const renderNotTargetPalylistUI = async (tracking) => {
 
 const playlistExists = async () => {
   let ytPlaylistExists = false;
-  // const currentTab = await getCurrentTab();
-  // const currentTabParameters = currentTab.url.split("?")[1];
-  // const ytURLParameters = new URLSearchParams(currentTabParameters);
-  //console.log(ytURLParameters.get("list"));
   const ytListParameter = await getYTListParameter();
+
   if (ytListParameter !== null) {
     ytPlaylistExists = true;
   }
-  console.log(ytPlaylistExists);
-  console.log(ytListParameter);
+
   return ytPlaylistExists;
 };
 
@@ -131,8 +82,7 @@ const videoExists = async () => {
   if (ytVideoParameter !== null) {
     ytVideoExists = true;
   }
-  console.log(ytVideoExists);
-  console.log(ytVideoParameter);
+
   return ytVideoExists;
 };
 
@@ -154,7 +104,6 @@ const getCurrentPlaylistDetails = async (api_key) => {
 
 const renderRecordOptionsNode = () => {
   // Create elements
-  // const recordOption_divContainer = document.createElement("div");
   const recordOption_divContainer = document.createElement("div");
 
   // Add classes
@@ -166,7 +115,6 @@ const renderRecordOptionsNode = () => {
 const renderTrackingInProgressUI = () => {
   console.log("Render Tracking");
   // Create elements
-  // const playlistDetails_section_div = document.querySelector(".record-playlist");
   const recordOption_divContainer = document.querySelector(
     ".record-options-container"
   );
@@ -174,7 +122,6 @@ const renderTrackingInProgressUI = () => {
   const stopRecording_button = document.createElement("button");
 
   // Add classes
-  // playlistDetails_section_div.classList.add("recording-options");
   viewAll_button.classList.add("view-all-button");
   stopRecording_button.classList.add("stop-recording-button");
 
@@ -183,10 +130,6 @@ const renderTrackingInProgressUI = () => {
   stopRecording_button.innerHTML = "Stop Recording";
 
   // Build Node structure (nest elements)
-  // playlistDetails_section_div.replaceChildren(viewAll_button, stopRecording_button);
-  console.log(recordOption_divContainer);
-  console.log(viewAll_button);
-  console.log(stopRecording_button);
   recordOption_divContainer.replaceChildren(
     viewAll_button,
     stopRecording_button
@@ -204,12 +147,6 @@ const startTrackingEventHandler = async () => {
     tabID: activeTabID,
     playlistID: ytListParameter,
   });
-
-  // chromeTabsCommunicationPort.onMessage.addListener((message) => {
-  //   if (message.purpose === "playlist-tracking-status" && message.tracking) {
-  //     renderTrackingInProgressUI();
-  //   }
-  // });
 };
 
 const renderNotOnYouTubePageUI = () => {
@@ -346,56 +283,14 @@ const setPlaylistFoundUI = () => {
     let playlistDetailsPromise = await getCurrentPlaylistDetails(
       config.YT_API_KEY
     );
-    console.log(playlistDetailsPromise);
+
     let playlistDetails = playlistDetailsPromise.items[0].snippet;
-
-    // await chromeTabsCommunicationPort.postMessage({
-    //   command: "check-playlist-tracking-status",
-    //   tabID: activeTabID,
-    // });
-
-    // chromeTabsCommunicationPort.onMessage.addListener((message) => {
-    //   if (message.purpose === "playlist-tracking-status" && message.tracking) {
-    //     renderTrackingInProgressUI();
-    //   } else if (
-    //     message.purpose === "playlist-tracking-status" &&
-    //     !message.tracking
-    //   ) {
-    //     renderPlaylistDetailsUI(
-    //       playlistDetails.title,
-    //       playlistDetails.thumbnails.default.url,
-    //       false
-    //     );
-    //   }
-    // });
 
     renderPlaylistDetailsUI(
       playlistDetails.title,
       playlistDetails.thumbnails.default.url,
       false
     );
-
-    // await chromeTabsCommunicationPort.postMessage({
-    //   command: "check-playlist-tracking-status",
-    //   tabID: getActiveTabID(),
-    // });
-
-    // chromeTabsCommunicationPort.onMessage.addListener((message) => {
-    //   console.log("In view, received message from background script: ");
-    //   if (message.purpose === "playlist-tracking-status" && !message.tracking) {
-    //     console.log(message);
-    //     renderPlaylistDetailsUI(
-    //       playlistDetails.title,
-    //       playlistDetails.thumbnails.default.url,
-    //       false
-    //     );
-    //   }
-    // });
-
-    /*console.log(playlistDetails.title);
-    console.log(playlistDetails.thumbnails.default.url);
-    console.log("The key: ", config.YT_API_KEY);
-    console.log(getCurrentPlaylistDetails(config.YT_API_KEY));*/
   });
 };
 
@@ -429,11 +324,6 @@ const setTrackingInProgressUI = (playlistTitle, thumbnailURL, tracking) => {
 
   viewRoot.appendChild(playlistDetails_section);
 
-  // if (!tracking) {
-  //   renderRecordPlaylistUI();
-  // } else {
-  //   renderTrackingInProgressUI();
-  // }
   renderRecordOptionsNode();
   renderTrackingInProgressUI();
 };
@@ -489,39 +379,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         renderNotTargetPalylistUI(message.tracking);
       } else if (message.tracking && !message.initialize) {
         renderPlaylistFoundUI();
-      } /*else if (
-        message.tracking &&
-        message.initialize &&
-        message.playlistID === activePlaylist
-      ) {
-        console.log(message.playlistID);
-        renderTrackingInProgressUI();
-      }*/ else if (!message.tracking && !message.initialize) {
+      } else if (!message.tracking && !message.initialize) {
         setPlaylistFoundUI();
-        // } else if (
-        //   !message.initialize &&
-        //   // message.purpose === "playlist-tracking-status" &&
-        //   !message.tracking
-        // ) {
-        //   renderPlaylistFoundUI();
-        // }
-        // else if (
-        //   // message.purpose === "playlist-tracking-status" &&
-        //   message.tracking &&
-        //   message.initialize
-        // ) {
-        //   // if (message.purpose === "playlist-tracking-status" && true) {
-        //   console.log("Tracking", message.tracking);
-        //   renderPlaylistFoundUI();
-        //   //setPlaylistFoundUI();
-        //   //renderTrackingInProgressUI();
-        // }
       }
     });
   } else if (
-    /*currentTab.url.includes("youtube.com/watch") &&*/
     (video_exists && !playlist_exists) ||
-    // (currentTab.url.includes("youtube.com") && playlist_exists) ||
     currentTab.url.includes("youtube.com")
   ) {
     console.log(

@@ -85,18 +85,5 @@
     });
   };
 
-  // chrome.runtime.onMessage.addListener(function (
-  //   message,
-  //   sender,
-  //   sendResponse
-  // ) {
-  //   if (message.clicked) {
-  //     console.log("Clicked");
-  //     portFromView.postMessage({
-  //       purpose: "Entry",
-  //     });
-  //   }
-  // });
-
   chrome.runtime.onConnect.addListener(connected);
 })();
