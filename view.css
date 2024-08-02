@@ -47,9 +47,12 @@ body {
 }
 
 /* Styles for YouTube pages with
-   no playlists on them.
+   no playlists on them and playlist
+   that doesn't match the target
+   playlist.
 ------------------------------------*/
-.no-active-playlist-container {
+.no-active-playlist-container,
+.not-target-playlist-container {
   margin: auto;
   text-align: center;
   color: rgba(241, 241, 241, 1);
@@ -115,9 +118,19 @@ body {
   cursor: pointer;
 }
 
+/* Styles for stop recording button */
+.record-options-container {
+  clear: both;
+  border: 0.5px solid rgba(38, 38, 38, 1);
+  border-radius: 0px 0px 8px 8px;
+  /*background-color: rgba(15,15,15, 1);*/
+  /* color: rgba(241, 241, 241, 1); */
+  /*color: rgba(33, 135, 184, 1);*/
+}
+
 .view-all-button,
 .stop-recording-button {
-  display: inline-block;
+  display: inline;
   background-color: rgba(15, 15, 15, 1);
   border: 0px;
   padding: 12px;
@@ -130,5 +143,44 @@ body {
 
 .stop-recording-button:hover {
   background-color: rgba(255, 15, 15, 1);
+  color: rgba(248, 248, 255, 1);
+}
+
+/* Styles for view all button */
+.view-all-button {
+  color: rgba(33, 135, 184, 1);
+}
+
+.view-all-button:hover {
+  background-color: rgba(115, 194, 251, 1);
+  color: rgba(248, 248, 255, 1);
+}
+
+/* Styles for listing videos section */
+.video-item-container {
+  text-align: center;
+  clear: both;
+}
+
+.current-video-item-img {
+  width: 50px;
+  float: left;
+}
+
+.current-video-title {
+  /*float: left;*/
+  text-align: left;
+  color: rgba(248, 248, 255, 1);
+  /*margin: 10px 0px 15px 5px;*/
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Style for download link */
+.download-link {
+  text-align: center;
+  background-color: rgba(50, 205, 50, 1);
+  text-decoration: none;
   color: rgba(248, 248, 255, 1);
 }
