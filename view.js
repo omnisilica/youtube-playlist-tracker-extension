@@ -132,15 +132,15 @@ const renderDownloadUI = () => {
   recordOption_divContainer.replaceChildren(viewAll_button, download_button);
 };
 
-const stopTrackingPlaylist = () => {
-  renderDownloadUI();
-};
+// const stopTrackingPlaylist = () => {
+//   renderDownloadUI();
+// };
 
 const stopTrackingEventHandler = async () => {
   const activeTabID = await getActiveTabID();
   const ytListParameter = await getYTListParameter();
 
-  stopTrackingPlaylist();
+  // renderDownloadUI();
 
   await chromeTabsCommunicationPort.postMessage({
     command: "stop-tracking-playlist",
@@ -334,6 +334,9 @@ const setPlaylistFoundUI = () => {
 };
 
 const renderStopTrackingUI = (playlistTitle, thumbnailURL, tracking) => {
+  const playlistDetails = document.querySelector(".playlist-details");
+  console.log(playlistDetails);
+
   // Create elements
   const playlistDetails_section = document.createElement("section");
   const playlistDetails_section_img = document.createElement("img");
@@ -361,9 +364,9 @@ const renderStopTrackingUI = (playlistTitle, thumbnailURL, tracking) => {
   playlistDetails_section.appendChild(playlistDetails_sectionTitle_div);
   // playlistDetails_section.appendChild(playlistDetails_sectionRecordOption_div);
 
-  viewRoot.appendChild(playlistDetails_section);
+  viewRoot.replaceChildren(playlistDetails_section);
 
-  // renderRecordOptionsNode();
+  renderRecordOptionsNode();
   renderDownloadUI();
 };
 
@@ -469,25 +472,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         message.terminate &&
         activePlaylist === message.playlistID
       ) {
+        console.log("First if");
         setStopTrackingUI();
       } else if (
         message.tracking &&
         !message.initialize &&
         activePlaylist !== message.playlistID
       ) {
+        console.log("Second if");
         console.log(message.playlistID);
         renderNotTargetPalylistUI(message.tracking);
-      } else if (
-        message.tracking &&
-        !message.initialize &&
-        !message.terminate
-      ) {
+      } else if (message.tracking && !message.initialize) {
+        console.log("Third if");
         renderPlaylistFoundUI();
-      } else if (
-        !message.tracking &&
-        !message.initialize &&
-        !message.terminate
-      ) {
+      } else if (!message.tracking && !message.initialize) {
+        console.log("Fourth if");
         setPlaylistFoundUI();
       }
     });
