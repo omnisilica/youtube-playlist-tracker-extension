@@ -1,4 +1,13 @@
 (() => {
+  const getActiveTabURL = async () => {
+    const tabs = await chrome.tabs.query({
+      currentWindow: true,
+      active: true,
+    });
+
+    return tabs[0];
+  };
+
   const printKeysInLocalStorage = () => {
     chrome.storage.local.get(null).then((result) => {
       var localStorageKeys = Object.keys(result);
@@ -84,6 +93,30 @@
     });
   };
 
+  const tabBeingTracked = (tabID, tab) => {
+    if (tab.url) {
+      const currentTabParameters = tab.url.split("?")[1];
+      const ytURLParameters = new URLSearchParams(currentTabParameters);
+      const ytVideoParameter = ytURLParameters.get("v");
+      const ytVideoIndexParameter = ytURLParameters.get("index");
+
+      chrome.storage.local.get(null).then((result) => {
+        var localStorageKeys = Object.keys(result);
+        if (
+          localStorageKeys.includes("" + tabID) &&
+          result[tabID].tracking &&
+          currentTabParameters !== undefined
+        ) {
+          //get video details from url parameters and populate playlist_index_record
+
+          console.log(currentTabParameters);
+          console.log(ytVideoIndexParameter);
+          console.log(ytVideoParameter);
+        }
+      });
+    }
+  };
+
   const stopTrackingPlaylist = (tabID, playlistID) => {
     let currentTabTrackingInProgress = false;
 
@@ -132,4 +165,8 @@
   };
 
   chrome.runtime.onConnect.addListener(connected);
+
+  chrome.tabs.onUpdated.addListener((tabID, tab) => {
+    tabBeingTracked(tabID, tab);
+  });
 })();
