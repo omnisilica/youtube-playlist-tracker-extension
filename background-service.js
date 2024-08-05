@@ -14,16 +14,28 @@
         console.log("Storage");
 
         chrome.storage.local.get(["" + tabID]).then((result) => {
-          console.log("Value is " + JSON.stringify(result));
-          console.log(result[tabID].playlist_id);
-          const playlistDetails = result[tabID];
+          if (result[tabID].tracking) {
+            console.log("Value is " + JSON.stringify(result));
+            console.log(result[tabID].playlist_id);
+            const playlistDetails = result[tabID];
 
-          portFromView.postMessage({
-            purpose: "playlist-tracking-status",
-            tracking: true,
-            initialize: false,
-            playlistID: playlistDetails.playlist_id,
-          });
+            portFromView.postMessage({
+              purpose: "playlist-tracking-status",
+              tracking: true,
+              initialize: false,
+              playlistID: playlistDetails.playlist_id,
+              terminate: false,
+            });
+          } else {
+            const playlistDetails = result[tabID];
+            portFromView.postMessage({
+              purpose: "playlist-tracking-status",
+              tracking: false,
+              initialize: false,
+              playlistID: playlistDetails.playlist_id,
+              terminate: true,
+            });
+          }
         });
       } else if (!localStorageKeys.includes("" + tabID)) {
         console.log("No Storage");
@@ -31,6 +43,7 @@
           purpose: "playlist-tracking-status",
           tracking: false,
           initialize: false,
+          terminate: false,
         });
       }
     });
@@ -64,9 +77,40 @@
               purpose: "playlist-tracking-status",
               tracking: true,
               initialize: true,
+              terminate: false,
             });
           });
       }
+    });
+  };
+
+  const stopTrackingPlaylist = (tabID, playlistID) => {
+    let currentTabTrackingInProgress = false;
+
+    chrome.storage.local.get(["" + tabID]).then((result) => {
+      console.log("Value is " + JSON.stringify(result));
+      console.log(result[tabID].playlist_id);
+      let stopTrackingPlaylist = {
+        tracking: false,
+        playlist_id: result[tabID].playlist_id,
+        playlist_index_record: result[tabID].playlist_index_record,
+      };
+
+      const playlistDetails = result[tabID];
+
+      chrome.storage.local.clear();
+
+      chrome.storage.local
+        .set({ [tabID]: stopTrackingPlaylist })
+        .then((result) => {
+          portFromView.postMessage({
+            purpose: "playlist-tracking-status",
+            tracking: false,
+            initialize: false,
+            playlistID: playlistDetails.playlist_id,
+            terminate: true,
+          });
+        });
     });
   };
 
@@ -81,6 +125,8 @@
         checkPlaylistTrackingStatus(portFromView, message.tabID);
       } else if (message.command === "start-tracking-playlist") {
         startTrackingPlaylist(message.tabID, message.playlistID);
+      } else if (message.command === "stop-tracking-playlist") {
+        stopTrackingPlaylist(message.tabID, message.playlistID);
       }
     });
   };

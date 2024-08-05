@@ -127,7 +127,8 @@ body {
 
 /* Styles for stop recording button */
 .view-all-button,
-.stop-recording-button {
+.stop-recording-button,
+.download-button {
   display: inline;
   background-color: rgba(15, 15, 15, 1);
   border: 0px;
@@ -173,10 +174,12 @@ body {
   white-space: nowrap;
 }
 
-/* Style for download link */
-.download-link {
-  text-align: center;
-  background-color: rgba(50, 205, 50, 1);
-  text-decoration: none;
+/* Style for download button */
+.download-button {
+  color: rgba(50, 205, 50, 1);
+}
+
+.download-button:hover {
   color: rgba(248, 248, 255, 1);
+  background-color: rgba(50, 205, 50, 1);
 }

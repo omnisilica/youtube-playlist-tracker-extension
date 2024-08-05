@@ -112,6 +112,43 @@ const renderRecordOptionsNode = () => {
   viewRoot.appendChild(recordOption_divContainer);
 };
 
+const renderDownloadUI = () => {
+  // Create elements
+  const recordOption_divContainer = document.querySelector(
+    ".record-options-container"
+  );
+  const viewAll_button = document.createElement("button");
+  const download_button = document.createElement("button");
+
+  // Add classes
+  viewAll_button.classList.add("view-all-button");
+  download_button.classList.add("download-button");
+
+  // Add text
+  viewAll_button.innerHTML = "View All";
+  download_button.innerHTML = "Download";
+
+  // Build Node structure (nest elements)
+  recordOption_divContainer.replaceChildren(viewAll_button, download_button);
+};
+
+const stopTrackingPlaylist = () => {
+  renderDownloadUI();
+};
+
+const stopTrackingEventHandler = async () => {
+  const activeTabID = await getActiveTabID();
+  const ytListParameter = await getYTListParameter();
+
+  stopTrackingPlaylist();
+
+  await chromeTabsCommunicationPort.postMessage({
+    command: "stop-tracking-playlist",
+    tabID: activeTabID,
+    playlistID: ytListParameter,
+  });
+};
+
 const renderTrackingInProgressUI = () => {
   console.log("Render Tracking");
   // Create elements
@@ -134,6 +171,8 @@ const renderTrackingInProgressUI = () => {
     viewAll_button,
     stopRecording_button
   );
+
+  stopRecording_button.addEventListener("click", stopTrackingEventHandler);
 };
 
 const startTrackingEventHandler = async () => {
@@ -294,6 +333,59 @@ const setPlaylistFoundUI = () => {
   });
 };
 
+const renderStopTrackingUI = (playlistTitle, thumbnailURL, tracking) => {
+  // Create elements
+  const playlistDetails_section = document.createElement("section");
+  const playlistDetails_section_img = document.createElement("img");
+  const playlistDetails_sectionTitle_div = document.createElement("div");
+  const playlistDetails_sectionTitle_paragraph = document.createElement("p");
+
+  // Add attributes
+  playlistDetails_section_img.src = thumbnailURL;
+  playlistDetails_section_img.alt = `Thumbnail image for ${playlistTitle}`;
+  playlistDetails_section_img.title = `Thumbnail image for ${playlistTitle}`;
+
+  // Add classes
+  playlistDetails_section.className = "playlist-details";
+  playlistDetails_sectionTitle_div.className = "playlist-title";
+
+  // Add text
+  playlistDetails_sectionTitle_paragraph.innerHTML = playlistTitle;
+
+  // Build Node structure (nest elements)
+  playlistDetails_sectionTitle_div.appendChild(
+    playlistDetails_sectionTitle_paragraph
+  );
+
+  playlistDetails_section.appendChild(playlistDetails_section_img);
+  playlistDetails_section.appendChild(playlistDetails_sectionTitle_div);
+  // playlistDetails_section.appendChild(playlistDetails_sectionRecordOption_div);
+
+  viewRoot.appendChild(playlistDetails_section);
+
+  // renderRecordOptionsNode();
+  renderDownloadUI();
+};
+
+const setStopTrackingUI = () => {
+  getApiKey().then(async (result) => {
+    const activeTabID = await getActiveTabID();
+    let config = JSON.parse(result)[0];
+
+    let playlistDetailsPromise = await getCurrentPlaylistDetails(
+      config.YT_API_KEY
+    );
+    console.log(playlistDetailsPromise);
+    let playlistDetails = playlistDetailsPromise.items[0].snippet;
+
+    renderStopTrackingUI(
+      playlistDetails.title,
+      playlistDetails.thumbnails.default.url,
+      false
+    );
+  });
+};
+
 const setTrackingInProgressUI = (playlistTitle, thumbnailURL, tracking) => {
   // Create elements
   const playlistDetails_section = document.createElement("section");
@@ -349,6 +441,7 @@ const renderPlaylistFoundUI = () => {
 
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("DOMContent");
+
   const currentTab = await getCurrentTab();
   const playlist_exists = await playlistExists();
   const video_exists = await videoExists();
@@ -367,19 +460,34 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     chromeTabsCommunicationPort.onMessage.addListener(async (message) => {
       console.log("Tracking Status", message.tracking);
+      console.log("Terminate Status", message.terminate);
       console.log("Tab ID", activeTabID);
       console.log(message.initialize);
 
       if (
+        !message.tracking &&
+        message.terminate &&
+        activePlaylist === message.playlistID
+      ) {
+        setStopTrackingUI();
+      } else if (
         message.tracking &&
         !message.initialize &&
         activePlaylist !== message.playlistID
       ) {
         console.log(message.playlistID);
         renderNotTargetPalylistUI(message.tracking);
-      } else if (message.tracking && !message.initialize) {
+      } else if (
+        message.tracking &&
+        !message.initialize &&
+        !message.terminate
+      ) {
         renderPlaylistFoundUI();
-      } else if (!message.tracking && !message.initialize) {
+      } else if (
+        !message.tracking &&
+        !message.initialize &&
+        !message.terminate
+      ) {
         setPlaylistFoundUI();
       }
     });
