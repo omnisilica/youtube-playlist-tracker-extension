@@ -512,6 +512,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderNoPlaylistFoundUI();
   } else {
     console.log("User is not on a page that's displaying a YouTube Playlist");
+    //If tab isn't being tracked then don't redirect to different tab
 
     renderNotOnYouTubePageUI();
   }
