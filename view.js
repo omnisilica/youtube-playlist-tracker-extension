@@ -475,9 +475,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.log("First if");
         setStopTrackingUI();
       } else if (
-        message.tracking &&
-        !message.initialize &&
-        activePlaylist !== message.playlistID
+        (message.tracking &&
+          !message.initialize &&
+          activePlaylist !== message.playlistID) ||
+        (!message.tracking &&
+          message.terminate &&
+          activePlaylist !== message.playlistID)
       ) {
         console.log("Second if");
         console.log(message.playlistID);
