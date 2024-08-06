@@ -482,10 +482,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.log("Second if");
         console.log(message.playlistID);
         renderNotTargetPalylistUI(message.tracking);
-      } else if (message.tracking && !message.initialize) {
+      } else if (
+        message.tracking &&
+        !message.initialize &&
+        !message.terminate
+      ) {
         console.log("Third if");
         renderPlaylistFoundUI();
-      } else if (!message.tracking && !message.initialize) {
+      } else if (
+        !message.tracking &&
+        !message.initialize &&
+        !message.terminate
+      ) {
         console.log("Fourth if");
         setPlaylistFoundUI();
       }

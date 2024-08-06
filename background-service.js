@@ -104,14 +104,36 @@
         var localStorageKeys = Object.keys(result);
         if (
           localStorageKeys.includes("" + tabID) &&
-          result[tabID].tracking &&
-          currentTabParameters !== undefined
+          result[tabID].tracking
+          // && currentTabParameters !== undefined
         ) {
+          // number:{index,videoID}
+          const newVideoRecord = {
+            videoID: ytVideoParameter,
+            index: ytVideoIndexParameter,
+          };
+
+          const newVideoRecordID = result[tabID].playlist_index_record + 1;
+          new_playlist_index_record = result[tabID].playlist_index_record;
+          new_playlist_index_record[newVideoRecordID] = newVideoRecord;
+          console.log(new_playlist_index_record);
+
+          // const number = newVideoRecord;
+
+          let updatedTabRecord = {
+            tracking: result[tabID].tracking,
+            playlist_id: result[tabID].playlist_id,
+            playlist_index_record: [
+              ...result[tabID].playlist_index_record,
+              newVideoRecordID[newVideoRecord],
+            ],
+          };
           //get video details from url parameters and populate playlist_index_record
 
           console.log(currentTabParameters);
           console.log(ytVideoIndexParameter);
           console.log(ytVideoParameter);
+          console.log(updatedTabRecord);
         }
       });
     }
