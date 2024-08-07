@@ -112,8 +112,72 @@ const renderRecordOptionsNode = () => {
   viewRoot.appendChild(recordOption_divContainer);
 };
 
-const renderTrackedVideos = (trackedVideos) => {
+const renderTrackedVideos = async (trackedVideos) => {
   console.log(trackedVideos);
+  console.log(trackedVideos[0]);
+  // Get video details
+  const configDetails = await getApiKey();
+  const config = JSON.parse(configDetails);
+  const api_key = config[0].YT_API_KEY;
+
+  console.log(configDetails);
+  console.log(config);
+  console.log(api_key);
+  // const videoSnippetRequest
+
+  // Create elements
+  const trackedVideos_div = document.createElement("div");
+
+  // Add attributes
+
+  // Add classes
+  trackedVideos_div.classList.add("list-videos");
+
+  // Add text
+
+  // Build Node structure (nest elements)
+
+  // loop through trackedVideos
+  for (let videoCount = 0; videoCount < trackedVideos.length; videoCount++) {
+    // Get video details
+    const video_id = trackedVideos[videoCount].videoID;
+    console.log(video_id);
+    const videoSnippetResponse = await fetch(
+      `https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${video_id}&key=${api_key}`
+    );
+    const videoDetails = await videoSnippetResponse.json();
+    const videoTitle = videoDetails.items[0].snippet.title;
+    const videoThumnailURL =
+      videoDetails.items[0].snippet.thumbnails.default.url;
+    console.log(video_id);
+    console.log(videoTitle);
+    console.log(videoThumnailURL);
+
+    // Create elements
+    const videoItem_div = document.createElement("div");
+    const videoItem_img = document.createElement("img");
+    const videoItem_paragraph = document.createElement("p");
+
+    // Add attributes
+    videoItem_img.src = videoThumnailURL;
+    videoItem_img.alt = `Thumbnail image for ${videoTitle}`;
+    videoItem_img.title = `Thumbnail image for ${videoTitle}`;
+
+    // Add classes
+    videoItem_div.classList.add("video-item-container");
+    videoItem_img.classList.add("current-video-item-img");
+    videoItem_paragraph.classList.add("current-video-title");
+
+    // Add text
+    videoItem_paragraph.innerText = videoTitle;
+
+    // Build node structure (nest elements)
+    videoItem_div.appendChild(videoItem_img);
+    videoItem_div.appendChild(videoItem_paragraph);
+    trackedVideos_div.appendChild(videoItem_div);
+  }
+
+  viewRoot.appendChild(trackedVideos_div);
 };
 
 const viewAllEventHandler = async () => {
