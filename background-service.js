@@ -171,6 +171,28 @@ chrome.tabs.onUpdated.addListener((tabID, tab) => {
     }
   };
 
+  const getTrackedVideos = (trackedVideosTabID, playlistID) => {
+    chrome.storage.local.get(null).then((result) => {
+      var localStorageKeys = Object.keys(result);
+      if (
+        localStorageKeys.includes("" + trackedVideosTabID) &&
+        result[trackedVideosTabID].tracking
+      ) {
+        chrome.storage.local.get(["" + trackedVideosTabID]).then((result) => {
+          console.log(result[trackedVideosTabID].playlist_index_record);
+          portFromView.postMessage({
+            purpose: "tracked-videos",
+            // tracking: result[trackedVideosTabID].tracking,
+            // initialize: false,
+            // playlistID: result[trackedVideosTabID].playlist_id,
+            // terminate: false,
+            videos: result[trackedVideosTabID].playlist_index_record,
+          });
+        });
+      }
+    });
+  };
+
   const stopTrackingPlaylist = (stopTrackTabID, playlistID) => {
     let currentTabTrackingInProgress = false;
 
@@ -215,6 +237,8 @@ chrome.tabs.onUpdated.addListener((tabID, tab) => {
         // startTrackingPlaylist(message.tabID, message.playlistID);
       } else if (message.command === "stop-tracking-playlist") {
         stopTrackingPlaylist(message.tabID, message.playlistID);
+      } else if (message.command === "retrieve-tracked-videos") {
+        getTrackedVideos(message.tabID, message.playlistID);
       }
     });
   };

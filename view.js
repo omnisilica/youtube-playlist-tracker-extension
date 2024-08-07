@@ -112,6 +112,29 @@ const renderRecordOptionsNode = () => {
   viewRoot.appendChild(recordOption_divContainer);
 };
 
+const renderTrackedVideos = (trackedVideos) => {
+  console.log(trackedVideos);
+};
+
+const viewAllEventHandler = async () => {
+  const activeTabID = await getActiveTabID();
+  const ytListParameter = await getYTListParameter();
+
+  await chromeTabsCommunicationPort.postMessage({
+    command: "retrieve-tracked-videos",
+    tabID: activeTabID,
+    playlistID: ytListParameter,
+  });
+
+  chromeTabsCommunicationPort.onMessage.addListener((message) => {
+    if (message.purpose === "tracked-videos") {
+      console.log("Works");
+      // console.log(message.videos);
+      renderTrackedVideos(message.videos);
+    }
+  });
+};
+
 const renderDownloadUI = () => {
   // Create elements
   const recordOption_divContainer = document.querySelector(
@@ -172,6 +195,7 @@ const renderTrackingInProgressUI = () => {
     stopRecording_button
   );
 
+  viewAll_button.addEventListener("click", viewAllEventHandler);
   stopRecording_button.addEventListener("click", stopTrackingEventHandler);
 };
 
@@ -468,6 +492,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.log(message.initialize);
 
       if (
+        message.purpose === "playlist-tracking-status" &&
         !message.tracking &&
         message.terminate &&
         activePlaylist === message.playlistID
@@ -475,7 +500,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.log("First if");
         setStopTrackingUI();
       } else if (
-        (message.tracking &&
+        (message.purpose === "playlist-tracking-status" &&
+          message.tracking &&
           !message.initialize &&
           activePlaylist !== message.playlistID) ||
         (!message.tracking &&
@@ -486,6 +512,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.log(message.playlistID);
         renderNotTargetPalylistUI(message.tracking);
       } else if (
+        message.purpose === "playlist-tracking-status" &&
         message.tracking &&
         !message.initialize &&
         !message.terminate
@@ -493,6 +520,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.log("Third if");
         renderPlaylistFoundUI();
       } else if (
+        message.purpose === "playlist-tracking-status" &&
         !message.tracking &&
         !message.initialize &&
         !message.terminate
