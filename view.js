@@ -227,6 +227,8 @@ const addTrackedVideosToList = async (trackedVideos) => {
     // trackedVideoTitles.push("\n");
   }
 
+  trackedVideoTitles = trackedVideoTitles.join("\n");
+
   console.log(trackedVideoTitles);
 
   return trackedVideoTitles;
