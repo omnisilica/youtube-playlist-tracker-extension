@@ -176,8 +176,8 @@ chrome.tabs.onUpdated.addListener((tabID, tab) => {
     chrome.storage.local.get(null).then((result) => {
       var localStorageKeys = Object.keys(result);
       if (
-        localStorageKeys.includes("" + trackedVideosTabID) &&
-        result[trackedVideosTabID].tracking
+        localStorageKeys.includes("" + trackedVideosTabID)
+        // && result[trackedVideosTabID].tracking
       ) {
         chrome.storage.local.get(["" + trackedVideosTabID]).then((result) => {
           console.log(result[trackedVideosTabID].playlist_index_record);

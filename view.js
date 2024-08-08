@@ -201,18 +201,17 @@ const viewAllEventHandler = async () => {
   });
 };
 
-const generateTextFile = async (trackedVideos) => {
+const addTrackedVideosToList = async (trackedVideos) => {
   const configDetails = await getApiKey();
   const config = JSON.parse(configDetails);
   const api_key = config[0].YT_API_KEY;
 
-  let listOfVidoesFile;
-  const videosToDownload = playlist.videos;
-  const stopRecordingButton = document.querySelector(".stop-recording-button");
+  // let listOfVidoesFile;
+  // const videosToDownload = trackedVideos;
+  // const stopRecordingButton = document.querySelector(".stop-recording-button");
 
-  let videoTitle;
-  let videoName = [];
-  let listData = new Blob([text], { type: "text/plain" });
+  // let videoTitle;
+  let trackedVideoTitles = [];
 
   for (let videoCount = 0; videoCount < trackedVideos.length; videoCount++) {
     const video_id = trackedVideos[videoCount].videoID;
@@ -221,20 +220,51 @@ const generateTextFile = async (trackedVideos) => {
     );
     const videoDetails = await videoSnippetResponse.json();
     const videoTitle = videoDetails.items[0].snippet.title;
-    const videoThumnailURL =
-      videoDetails.items[0].snippet.thumbnails.default.url;
+    // const videoThumnailURL = videoDetails.items[0].snippet.thumbnails.default.url;
 
-    videoTitle = videoDetails.items[0].snippet.title;
-    videoName.push(videoTitle + "\n");
+    // videoTitle = videoDetails.items[0].snippet.title;
+    trackedVideoTitles.push(videoTitle);
+    // trackedVideoTitles.push("\n");
   }
+
+  console.log(trackedVideoTitles);
+
+  return trackedVideoTitles;
+};
+
+const generateTextFile = async (trackedVideos) => {
+  const trackedVideoTitles = await addTrackedVideosToList(trackedVideos);
+  console.log(trackedVideoTitles);
+  let listOfVidoesFile;
+  let fileData = new Blob([trackedVideoTitles], { type: "text/plain" });
 
   if (listOfVidoesFile !== null) {
     window.URL.revokeObjectURL(listOfVidoesFile);
   }
 
-  listOfVidoesFile = window.URL.createObjectURL(listData);
+  listOfVidoesFile = window.URL.createObjectURL(fileData);
 
   return listOfVidoesFile;
+};
+
+const createLinkForDownload = async (trackedVideos) => {
+  // Create Element
+  const downloadLink_a = document.createElement("a");
+
+  // Add class
+  downloadLink_a.classList.add(".download-link");
+
+  // Add attribute
+  downloadLink_a.download = "tracked-videos.txt";
+  downloadLink_a.href = await generateTextFile(trackedVideos);
+
+  // Add style
+  // downloadLink_a.style.display = "block";
+
+  // Build Node structure (nest elements)
+  // viewRoot.appendChild(downloadLink_a);
+
+  downloadLink_a.click();
 };
 
 const downloadListEventHandler = async () => {
@@ -254,7 +284,7 @@ const downloadListEventHandler = async () => {
     if (message.purpose === "tracked-videos") {
       console.log("Works");
       // console.log(message.videos);
-      generateTextFile(message.videos);
+      createLinkForDownload(message.videos);
     }
   });
 };
@@ -266,6 +296,10 @@ const renderDownloadUI = () => {
   );
   const viewAll_button = document.createElement("button");
   const download_button = document.createElement("button");
+
+  // Add attributes
+  // download_button.download = "tracked-videos.txt";
+  // download_button.href = generateTextFile(trackedVideos);
 
   // Add classes
   viewAll_button.classList.add("view-all-button");
