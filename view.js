@@ -119,6 +119,7 @@ const renderTrackedVideos = async (trackedVideos) => {
   const configDetails = await getApiKey();
   const config = JSON.parse(configDetails);
   const api_key = config[0].YT_API_KEY;
+  const viewAll_button = document.querySelector(".view-all-button");
 
   console.log(configDetails);
   console.log(config);
@@ -177,6 +178,7 @@ const renderTrackedVideos = async (trackedVideos) => {
     trackedVideos_div.appendChild(videoItem_div);
   }
 
+  viewAll_button.disabled = true;
   viewRoot.appendChild(trackedVideos_div);
 };
 
@@ -199,6 +201,64 @@ const viewAllEventHandler = async () => {
   });
 };
 
+const generateTextFile = async (trackedVideos) => {
+  const configDetails = await getApiKey();
+  const config = JSON.parse(configDetails);
+  const api_key = config[0].YT_API_KEY;
+
+  let listOfVidoesFile;
+  const videosToDownload = playlist.videos;
+  const stopRecordingButton = document.querySelector(".stop-recording-button");
+
+  let videoTitle;
+  let videoName = [];
+  let listData = new Blob([text], { type: "text/plain" });
+
+  for (let videoCount = 0; videoCount < trackedVideos.length; videoCount++) {
+    const video_id = trackedVideos[videoCount].videoID;
+    const videoSnippetResponse = await fetch(
+      `https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${video_id}&key=${api_key}`
+    );
+    const videoDetails = await videoSnippetResponse.json();
+    const videoTitle = videoDetails.items[0].snippet.title;
+    const videoThumnailURL =
+      videoDetails.items[0].snippet.thumbnails.default.url;
+
+    videoTitle = videoDetails.items[0].snippet.title;
+    videoName.push(videoTitle + "\n");
+  }
+
+  if (listOfVidoesFile !== null) {
+    window.URL.revokeObjectURL(listOfVidoesFile);
+  }
+
+  listOfVidoesFile = window.URL.createObjectURL(listData);
+
+  return listOfVidoesFile;
+};
+
+const downloadListEventHandler = async () => {
+  const activeTabID = await getActiveTabID();
+  const ytListParameter = await getYTListParameter();
+
+  console.log("downloadListEventHandler()");
+
+  await chromeTabsCommunicationPort.postMessage({
+    command: "retrieve-tracked-videos",
+    tabID: activeTabID,
+    playlistID: ytListParameter,
+  });
+
+  chromeTabsCommunicationPort.onMessage.addListener((message) => {
+    console.log(message);
+    if (message.purpose === "tracked-videos") {
+      console.log("Works");
+      // console.log(message.videos);
+      generateTextFile(message.videos);
+    }
+  });
+};
+
 const renderDownloadUI = () => {
   // Create elements
   const recordOption_divContainer = document.querySelector(
@@ -217,6 +277,9 @@ const renderDownloadUI = () => {
 
   // Build Node structure (nest elements)
   recordOption_divContainer.replaceChildren(viewAll_button, download_button);
+
+  viewAll_button.addEventListener("click", viewAllEventHandler);
+  download_button.addEventListener("click", downloadListEventHandler);
 };
 
 // const stopTrackingPlaylist = () => {

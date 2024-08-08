@@ -172,6 +172,7 @@ chrome.tabs.onUpdated.addListener((tabID, tab) => {
   };
 
   const getTrackedVideos = (trackedVideosTabID, playlistID) => {
+    console.log("Tab deleted");
     chrome.storage.local.get(null).then((result) => {
       var localStorageKeys = Object.keys(result);
       if (
