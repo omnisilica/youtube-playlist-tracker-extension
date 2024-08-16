@@ -176,6 +176,7 @@ const renderTrackingInProgressUI = () => {
 };
 
 const startTrackingEventHandler = async () => {
+  const activeTab = await getCurrentTab();
   const activeTabID = await getActiveTabID();
   const ytListParameter = await getYTListParameter();
 
@@ -183,7 +184,8 @@ const startTrackingEventHandler = async () => {
 
   await chromeTabsCommunicationPort.postMessage({
     command: "start-tracking-playlist",
-    tabID: activeTabID,
+    tab: activeTab,
+    // tabID: activeTabID,
     playlistID: ytListParameter,
   });
 };
