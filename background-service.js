@@ -106,7 +106,7 @@
     const tab = await getActiveTabURL();
     console.log(tab);
 
-    if (tab.active) {
+    if (tab) {
       const tabID = tab.id;
       const currentTabParameters = tab.url.split("?")[1];
       const ytURLParameters = new URLSearchParams(currentTabParameters);
@@ -123,7 +123,7 @@
           // number:{index,videoID}
           const newVideoRecord = {
             videoID: ytVideoParameter,
-            videoIndex: ytVideoIndexParameter,
+            videoIndex: Number(ytVideoIndexParameter),
           };
 
           let newVideoRecordID = Number(
@@ -132,11 +132,17 @@
 
           new_playlist_index_record = result[tabID].playlist_index_record;
 
-          new_playlist_index_record_id =
-            new_playlist_index_record[newVideoRecordID - 1];
+          previousVideoRecord = new_playlist_index_record[newVideoRecordID - 1];
 
-          console.log(new_playlist_index_record_id.videoID);
-          new_playlist_index_record[newVideoRecordID] = newVideoRecord;
+          previousVideoID = previousVideoRecord.videoID;
+
+          console.log(previousVideoID);
+          console.log(ytVideoParameter);
+          if (ytVideoParameter !== previousVideoID) {
+            console.log("Valid data");
+            new_playlist_index_record[newVideoRecordID] = newVideoRecord;
+          }
+
           console.log(new_playlist_index_record);
           console.log(new_playlist_index_record[newVideoRecordID]);
           console.log(newVideoRecord);
@@ -160,8 +166,8 @@
           console.log(ytVideoParameter);
           console.log(updatedTabRecord);
 
-          console.log(new_playlist_index_record_id);
-          console.log(new_playlist_index_record_id.videoID);
+          // console.log(new_playlist_index_record_id);
+          // console.log(new_playlist_index_record_id.videoID);
         }
       });
     }
