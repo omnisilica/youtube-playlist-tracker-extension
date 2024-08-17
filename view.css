@@ -167,11 +167,14 @@ body {
 }
 
 .current-video-title {
+  /*float: left;*/
   text-align: left;
   color: rgba(248, 248, 255, 1);
+  /*margin: 10px 0px 15px 5px;*/
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  padding: 6px 0px 0px 6px;
 }
 
 /* Style for download button */
