@@ -41,7 +41,6 @@ const getYTListParameter = async () => {
 const getYTVideoParameter = async () => {
   const ytURLParameters = await getYTUrlParameters();
   const ytVideoParameter = ytURLParameters.get("v");
-  console.log(ytVideoParameter);
 
   return ytVideoParameter;
 };
@@ -117,11 +116,6 @@ const addTrackedVideosToList = async (trackedVideos) => {
   const config = JSON.parse(configDetails);
   const api_key = config[0].YT_API_KEY;
 
-  // let listOfVidoesFile;
-  // const videosToDownload = trackedVideos;
-  // const stopRecordingButton = document.querySelector(".stop-recording-button");
-
-  // let videoTitle;
   let trackedVideoTitles = [];
 
   for (let videoCount = 0; videoCount < trackedVideos.length; videoCount++) {
@@ -131,11 +125,8 @@ const addTrackedVideosToList = async (trackedVideos) => {
     );
     const videoDetails = await videoSnippetResponse.json();
     const videoTitle = videoDetails.items[0].snippet.title;
-    // const videoThumnailURL = videoDetails.items[0].snippet.thumbnails.default.url;
 
-    // videoTitle = videoDetails.items[0].snippet.title;
     trackedVideoTitles.push(videoTitle);
-    // trackedVideoTitles.push("\n");
   }
 
   trackedVideoTitles = trackedVideoTitles.join("\n");
@@ -147,7 +138,7 @@ const addTrackedVideosToList = async (trackedVideos) => {
 
 const generateTextFile = async (trackedVideos) => {
   const trackedVideoTitles = await addTrackedVideosToList(trackedVideos);
-  console.log(trackedVideoTitles);
+
   let listOfVidoesFile;
   let fileData = new Blob([trackedVideoTitles], { type: "text/plain" });
 
@@ -171,20 +162,12 @@ const createLinkForDownload = async (trackedVideos) => {
   downloadLink_a.download = "tracked-videos.txt";
   downloadLink_a.href = await generateTextFile(trackedVideos);
 
-  // Add style
-  // downloadLink_a.style.display = "block";
-
-  // Build Node structure (nest elements)
-  // viewRoot.appendChild(downloadLink_a);
-
   downloadLink_a.click();
 };
 
 const downloadListEventHandler = async () => {
   const activeTabID = await getActiveTabID();
   const ytListParameter = await getYTListParameter();
-
-  console.log("downloadListEventHandler()");
 
   await chromeTabsCommunicationPort.postMessage({
     command: "retrieve-tracked-videos",
@@ -195,8 +178,6 @@ const downloadListEventHandler = async () => {
   chromeTabsCommunicationPort.onMessage.addListener((message) => {
     console.log(message);
     if (message.purpose === "tracked-videos") {
-      console.log("Works");
-      // console.log(message.videos);
       createLinkForDownload(message.videos);
     }
   });
@@ -225,15 +206,9 @@ const renderDownloadUI = () => {
   download_button.addEventListener("click", downloadListEventHandler);
 };
 
-// const stopTrackingPlaylist = () => {
-//   renderDownloadUI();
-// };
-
 const stopTrackingEventHandler = async () => {
   const activeTabID = await getActiveTabID();
   const ytListParameter = await getYTListParameter();
-
-  // renderDownloadUI();
 
   await chromeTabsCommunicationPort.postMessage({
     command: "stop-tracking-playlist",
@@ -243,36 +218,23 @@ const stopTrackingEventHandler = async () => {
 };
 
 const renderTrackedVideos = async (trackedVideos) => {
-  console.log(trackedVideos);
-  console.log(trackedVideos[0]);
-  // Get video details
   const configDetails = await getApiKey();
   const config = JSON.parse(configDetails);
   const api_key = config[0].YT_API_KEY;
   const viewAll_button = document.querySelector(".view-all-button");
 
-  console.log(configDetails);
-  console.log(config);
-  console.log(api_key);
-  // const videoSnippetRequest
-
   // Create elements
   const trackedVideos_div = document.createElement("div");
 
-  // Add attributes
-
   // Add classes
   trackedVideos_div.classList.add("list-videos");
-
-  // Add text
 
   // Build Node structure (nest elements)
 
   // loop through trackedVideos
   for (let videoCount = 0; videoCount < trackedVideos.length; videoCount++) {
-    // Get video details
     const video_id = trackedVideos[videoCount].videoID;
-    console.log(video_id);
+
     const videoSnippetResponse = await fetch(
       `https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${video_id}&key=${api_key}`
     );
@@ -280,9 +242,6 @@ const renderTrackedVideos = async (trackedVideos) => {
     const videoTitle = videoDetails.items[0].snippet.title;
     const videoThumnailURL =
       videoDetails.items[0].snippet.thumbnails.default.url;
-    console.log(video_id);
-    console.log(videoTitle);
-    console.log(videoThumnailURL);
 
     // Create elements
     const videoItem_div = document.createElement("div");
@@ -324,15 +283,12 @@ const viewAllEventHandler = async () => {
 
   chromeTabsCommunicationPort.onMessage.addListener((message) => {
     if (message.purpose === "tracked-videos") {
-      console.log("Works");
-      // console.log(message.videos);
       renderTrackedVideos(message.videos);
     }
   });
 };
 
 const renderTrackingInProgressUI = () => {
-  console.log("Render Tracking");
   // Create elements
   const recordOption_divContainer = document.querySelector(
     ".record-options-container"
@@ -368,7 +324,6 @@ const startTrackingEventHandler = async () => {
   await chromeTabsCommunicationPort.postMessage({
     command: "start-tracking-playlist",
     tab: activeTab,
-    // tabID: activeTabID,
     playlistID: ytListParameter,
   });
 };
@@ -466,7 +421,7 @@ const renderRecordPlaylistUI = () => {
   record_button.addEventListener("click", startTrackingEventHandler);
 };
 
-const renderPlaylistDetailsUI = (playlistTitle, thumbnailURL, tracking) => {
+const renderPlaylistDetailsUI = (playlistTitle, thumbnailURL) => {
   // Create elements
   const playlistDetails_section = document.createElement("section");
   const playlistDetails_section_img = document.createElement("img");
@@ -518,9 +473,8 @@ const setPlaylistFoundUI = () => {
   });
 };
 
-const renderStopTrackingUI = (playlistTitle, thumbnailURL, tracking) => {
+const renderStopTrackingUI = (playlistTitle, thumbnailURL) => {
   const playlistDetails = document.querySelector(".playlist-details");
-  console.log(playlistDetails);
 
   // Create elements
   const playlistDetails_section = document.createElement("section");
@@ -574,7 +528,7 @@ const setStopTrackingUI = () => {
   });
 };
 
-const setTrackingInProgressUI = (playlistTitle, thumbnailURL, tracking) => {
+const setTrackingInProgressUI = (playlistTitle, thumbnailURL) => {
   // Create elements
   const playlistDetails_section = document.createElement("section");
   const playlistDetails_section_img = document.createElement("img");
@@ -600,7 +554,6 @@ const setTrackingInProgressUI = (playlistTitle, thumbnailURL, tracking) => {
 
   playlistDetails_section.appendChild(playlistDetails_section_img);
   playlistDetails_section.appendChild(playlistDetails_sectionTitle_div);
-  // playlistDetails_section.appendChild(playlistDetails_sectionRecordOption_div);
 
   viewRoot.appendChild(playlistDetails_section);
 
@@ -627,15 +580,13 @@ const renderPlaylistFoundUI = () => {
   });
 };
 
-document.addEventListener("DOMContentLoaded", async () => {
-  console.log("DOMContent");
-
+(async () => {
   const currentTab = await getCurrentTab();
   const playlist_exists = await playlistExists();
   const video_exists = await videoExists();
 
   if (currentTab.url.includes("youtube.com/watch") && playlist_exists) {
-    console.log("User is on a page with an active playlist.");
+    // console.log("User is on a page with an active playlist.");
 
     // Set and display current playlist
     const activeTabID = await getActiveTabID();
@@ -679,50 +630,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     (video_exists && !playlist_exists) ||
     currentTab.url.includes("youtube.com")
   ) {
-    console.log(
-      "User is on a YouTube page, but not one with an active playlist on it."
-    );
+    // console.log("User is on a YouTube page, but not one with an active playlist on it.");
 
     renderNoPlaylistFoundUI();
   } else {
-    console.log("User is not on a page that's displaying a YouTube Playlist");
+    // console.log("User is not on a page that's displaying a YouTube Playlist");
 
     renderNotOnYouTubePageUI();
   }
-});
-
-// (async () => {
-//   if (currentTab.url.includes("youtube.com/watch") && getYTListParameter()) {
-//     console.log("User is on a page with an active playlist.");
-
-//     // Set and display current playlist
-
-//     await chromeTabsCommunicationPort.postMessage({
-//       command: "check-playlist-tracking-status",
-//       tabID: getActiveTabID(),
-//     });
-
-//     chromeTabsCommunicationPort.onMessage.addListener((message) => {
-//       if (message.purpose === "playlist-tracking-status" && message.tracking) {
-//         console.log(message.tracking);
-//         renderTrackingInProgressUI();
-//       } else if (
-//         message.purpose === "playlist-tracking-status" &&
-//         !message.tracking
-//       ) {
-//         console.log(message.tracking);
-//         setPlaylistFoundUI();
-//       }
-//     });
-//   } else if (currentTab.url.includes("youtube.com")) {
-//     console.log(
-//       "User is on a YouTube page, but not one with an active playlist on it."
-//     );
-
-//     renderNoPlaylistFoundUI();
-//   } else {
-//     console.log("User is not on a page that's displaying a YouTube Playlist");
-
-//     renderNotOnYouTubePageUI();
-//   }
-// })();
+})();
