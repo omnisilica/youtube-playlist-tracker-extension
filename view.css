@@ -95,9 +95,6 @@ body {
   clear: both;
   border: 0.5px solid rgba(38, 38, 38, 1);
   border-radius: 0px 0px 8px 8px;
-  /*background-color: rgba(15,15,15, 1);*/
-  /* color: rgba(241, 241, 241, 1); */
-  /*color: rgba(33, 135, 184, 1);*/
 }
 
 .record-button {
@@ -111,7 +108,6 @@ body {
 .record-button:hover {
   background-color: rgba(115, 194, 251, 1);
   color: rgba(248, 248, 255, 1);
-  /*transition-delay: 0.1s;*/
 }
 
 .record-playlist p:hover {
@@ -167,10 +163,8 @@ body {
 }
 
 .current-video-title {
-  /*float: left;*/
   text-align: left;
   color: rgba(248, 248, 255, 1);
-  /*margin: 10px 0px 15px 5px;*/
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
